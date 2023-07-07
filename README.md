@@ -34,7 +34,7 @@ monitt.use(OtherPlugin);
   }
 ```
 
-以下是一个简单的插件例子，需要注意的是，写在 install 中的代码是立即执行的，使用 api.xx 则会在何时的生命周期中被执行，一般在 start 中做监听操作，需要在 destroy 中做取消监听。
+以下是一个简单的插件例子，需要注意的是，写在 install 中的代码是立即执行的，使用 api.xx 则会在合适的生命周期中被执行，一般在 start 中做监听操作，需要在 destroy 中做取消监听。
 
 ```ts
 import { type IApi, Plugin } from 'Monitt';
