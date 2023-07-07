@@ -1,30 +1,25 @@
 {
   "compilerOptions": {
-    "module": "esnext",
-    "target": "ES5",
-    "lib": ["esnext", "dom"],
-    "sourceMap": true,
-    "baseUrl": ".",
-    "jsx": "react-jsx",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
     "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
-    "allowJs": false,
+    "noUnusedParameters": true,
+    "strict": true,
     "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "strict": true
+    "target": "es2019",
+    "jsx": "react",
+    "lib": ["dom", "dom.iterable", "esnext"]
   },
   "exclude": [
-    "node_modules",
-    "build",
-    "dist",
-    "scripts",
-    "src/.umi/*",
-    "webpack",
-    "jest"
+    "**/node_modules",
+    "**/examples",
+    "**/dist",
+    "**/fixtures",
+    "**/*.test.ts",
+    "**/*.e2e.ts",
+    "**/templates",
+    "ui"
   ]
 }

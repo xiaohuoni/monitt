@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>error</title>
+    <script src="/monitt.min.js"></script>
+    <script>
+      function destroy() {
+        console.log('destroy');
+        window.monitt.stop();
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+      <button data-type="123">test</button>
+      <button onclick="destroy()">destroy</button>
+    </div>
+  </body>
+</html>

@@ -1,1 +1,8 @@
-console.log('hello monitt');
+import { Monitor, type IApi } from './Monitor';
+import { Plugin } from './Plugin';
+import { EventData } from './EventData';
+import { ClickPlugin } from './plugins/ClickPlugin';
+import * as Storage from './utils/Storage';
+
+export default Monitor;
+export { Monitor, ClickPlugin, Plugin, EventData, Storage, IApi };
