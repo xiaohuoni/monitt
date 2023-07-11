@@ -12,6 +12,7 @@ const setItem = (data: any, key = STORAGEKEY) => {
     storage.setItem(key, JSON.stringify(data));
   }
 };
+
 const removeItem = (key = STORAGEKEY) => storage.removeItem(key);
 
 export { getItem, setItem, removeItem };

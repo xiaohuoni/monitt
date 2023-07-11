@@ -3,7 +3,9 @@ import { DataCache } from './Cache';
 import { EventData } from './EventData';
 import { Lazy } from './Lazy';
 
-enum EVENTS {
+const EVENTS = ['start', 'destroy'];
+
+export enum PluginApi {
   start = 'start',
   destroy = 'destroy',
 }
@@ -15,7 +17,7 @@ export type IApi = Monitor & {
 };
 
 export class Monitor extends Emit {
-  instance = {};
+  public instance = {};
   dataCache: DataCache;
   lazy: Lazy;
   constructor() {
@@ -29,7 +31,7 @@ export class Monitor extends Emit {
         if (target[p]) {
           return target[p];
         }
-        if (EVENTS[p]) {
+        if (EVENTS.includes(p)) {
           return function (callback: any) {
             target.useSubscription(p as string, callback);
           };
@@ -46,7 +48,7 @@ export class Monitor extends Emit {
 
   // 启动埋点
   public run() {
-    this.emit(EVENTS.start, this);
+    this.emit(PluginApi.start, this);
   }
   // this 指向测试方法，无实际用处
   public haha() {
@@ -54,12 +56,12 @@ export class Monitor extends Emit {
   }
   //  销毁，也会销毁所有的插件
   public stop() {
-    this.emit(EVENTS.destroy, {});
+    this.emit(PluginApi.destroy, {});
     this.plugins.length = 0;
   }
   use(plugin: any) {
     const p = new plugin(this.instance);
-    if (!this.skipPlugins.includes(p.key)) {
+    if (!this.skipPlugins.includes(p.key) && p?.key) {
       p.install(this.instance);
       this.plugins.push(p);
     }
@@ -70,10 +72,8 @@ export class Monitor extends Emit {
 
   lazySend(data: EventData, timeout = 3000) {
     this.dataCache.addCache(data);
-    console.log('lazySend', data);
     this.lazy.listenerHandle(() => {
       const data = this.dataCache.getCache();
-      console.log('lazySend listenerHandle', data);
       if (data.length) {
         this.send(data);
         this.dataCache.clearCache();

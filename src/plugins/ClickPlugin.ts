@@ -10,10 +10,6 @@ export class ClickPlugin extends Plugin {
     this.listenerHandle(() => {
       const target = event.target;
       console.log(target);
-      // TODO: 临时测试代码
-      // @ts-ignore
-      const dataType = target?.getAttribute('data-type');
-      console.log(dataType);
       // 上报
       this.api.lazySend(
         new EventData({

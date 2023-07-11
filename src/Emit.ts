@@ -2,7 +2,7 @@ type Subscription<T> = (val: T) => void;
 
 export class Emit {
   constructor() {}
-  public subscriptions = {};
+  public subscriptions: any = {};
 
   public emit = (type: string, val: any) => {
     if (!this.subscriptions[type]) {

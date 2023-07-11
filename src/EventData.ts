@@ -9,6 +9,7 @@ interface EventDataProps {
   timestamp?: number;
   data: any;
 }
+
 export class EventData {
   name: string;
   timestamp?: number;
