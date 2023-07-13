@@ -20,11 +20,19 @@ export type IApi = Monitor & {
 
 export class Monitor extends Emit {
   public instance = {};
+  // 缓存数据，用于合并短时间内的埋点数据
   dataCache: DataCache;
+  // 延迟执行函数
   lazy: Lazy;
+  // 延迟发送的时间，默认 3 秒
+  lazySengTimeout :number = 3000;
+  // 配置 
   config: ConfigProps = {};
+  // 发送器，默认使用 sendBeacon 在空闲时发送，支持自定义
   sender: Sender;
   listenerEmit: Emit;
+  // 用户，通过 setUserData 设置，每一次饭送数据的时候会携带
+  userData:any={};
   constructor(config?: Config) {
     super();
     this.config = new Config(config || {});
@@ -50,8 +58,9 @@ export class Monitor extends Emit {
       },
     });
   }
-  // 展示的所有组件
+  // 所有的插件
   public plugins: any[] = [];
+  // 支持跳过某些插件
   public skipPlugins: string[] = [];
 
   // 启动埋点
@@ -62,7 +71,7 @@ export class Monitor extends Emit {
   public haha() {
     console.log('haha');
   }
-  //  销毁，也会销毁所有的插件
+  //  停止，也会销毁所有的插件
   public stop() {
     this.emit(PluginApi.destroy, {});
     this.plugins.length = 0;
@@ -74,12 +83,21 @@ export class Monitor extends Emit {
       this.plugins.push(p);
     }
   }
+
+  // 默认会携带 user 数据
+  format(data: EventData[]){
+return {
+  userData:this.userData,
+  data
+}
+  }
+  // 立即发送数据，注意和 lazySend 的差异
   send(data: EventData[]) {
     // console.log('请求接口，发送数据', data);
-    this.sender.send(data);
+    this.sender.send(this.format(data));
   }
-
-  lazySend(data: EventData, timeout = 3000) {
+  // 延迟合并发送数据
+  lazySend(data: EventData, timeout?:number) {
     this.dataCache.addCache(data);
     this.lazy.listenerHandle(() => {
       const data = this.dataCache.getCache();
@@ -87,13 +105,16 @@ export class Monitor extends Emit {
         this.send(data);
         this.dataCache.clearCache();
       }
-    }, timeout);
+    }, timeout??this.lazySengTimeout);
   }
-
+  setUserData(data:any){
+    this.userData = data;
+  }
   emitListener(type: string, val: any) {
     this.listenerEmit.emit(type, val);
   }
 
+  // 启用监听
   addEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
@@ -104,6 +125,7 @@ export class Monitor extends Emit {
     this.listenerEmit.useSubscription(type, listener as any);
   }
 
+  // 取消监听
   removeEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,

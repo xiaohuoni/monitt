@@ -4,7 +4,7 @@ export interface ConfigProps {
 export class Config {
   url: string;
   constructor(config: ConfigProps) {
-    this.url = config?.url ?? 'monittURL';
+    this.url = config?.url ?? '';
   }
   setConfig(type: string, value: any) {
     switch (type) {

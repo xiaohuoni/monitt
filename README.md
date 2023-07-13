@@ -11,6 +11,98 @@ const config = new Config({ url: 'post url' });
 const monitt = new Monitor(config);
 monitt.use(ClickPlugin);
 monitt.run();
+
+// 可以把 monitt 放到 window 对象上，方便使用。
+window.monitt = monitt;
+```
+
+需要注意的是 monitt 的功能取决于所使用的插件数量，以下文档仅表示最基本的知识。
+
+## 配置
+
+```js
+const config = new Config({ ... });
+```
+
+new Config 时传入的为默认配置，后续都可以通过 `monitt.config.setConfig` 单独修改，如：
+
+```js
+monitt.config.setConfig('url','http://haha.com/api/v1/monite');
+```
+
+因为有时候 window.monitt  可能是通过 cdn 挂在进来的，此时已经完成了初始化过程，可以在  send 之前调用 set 方法，修改掉默认的配置和方法。
+
+###  url 
+
+post 发送的服务器地址，默认为空
+
+## API 和功能概览
+
+### config
+
+new Config 对象，可以取到配置管理器
+
+### userData
+
+当前用户数据，会在每一次发送数据时携带，可以通过 setUserData 设置
+
+### setUserData
+
+设置当前用户数据
+
+```js
+monitt.setUserData({ id :'1123' })
+```
+
+###  instance
+
+插件机制的 api，也支持直接调用。
+
+比如 
+
+```js
+const monitt = new Monitor();
+monitt.instance.destroy(()=>{
+  // 在 monitt stop 的时候做点啥
+})
+```
+
+可以调用插件 api 的生命周期函数，其实每一次调用生命周期函数，都是注册一次监听。注意手动调用的时机，比如要调用 start ，要在 run 之前，否则是无效的。
+
+### lazy
+
+延迟执行方法集成对象，比如如果有个函数在 3 秒内只能调用一次
+
+```js
+const monitt = new Monitor();
+const callback = ()=>{
+  monitt.lazy.listenerHandle(()=>{
+    // 只会在停止调用 3 秒后执行
+  },3000)
+}
+callback();
+callback();
+callback();
+callback();
+// 3000ms 后执行
+```
+
+### addEventListener
+
+添加一个事件侦听器，比如监听鼠标点击
+
+```js
+const monitt = new Monitor();
+monitt.addEventListener('mousedown', this.handleClick);
+```
+
+### removeEventListener
+
+移除一个事件侦听器 ，比如移除监听鼠标点击
+
+```js
+const monitt = new Monitor();
+monitt.removeEventListener('mousedown', this.handleClick);
 ```
 
 ## 插件机制
@@ -100,6 +192,11 @@ handleClick = (event: Event) => {
 	}
 }
 ```
+
+## 演示
+
+https://click-xiaohuoni.vercel.app/
+当前支持收集点击时间，发给一个 404 路径
 
 ## 致谢
 
