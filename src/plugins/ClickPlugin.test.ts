@@ -10,20 +10,15 @@ describe('Monitor', () => {
     vi.restoreAllMocks();
   });
   it('install', () => {
-    let callData: any = null;
-    const fn = vi.fn((t, data) => {
-      callData = data;
-      return t;
-    });
+    const fn = vi.fn((t) => (t[0] ? t[0].name : t));
     vi.spyOn(console, 'log').mockImplementation(fn);
     const monitt = new Monitor();
-    const clickP = new ClickPlugin(monitt.instance as any);
-    clickP.install(monitt.instance as any);
+    monitt.use(ClickPlugin);
     monitt.run();
-    clickP.handleClick({} as any);
+    // 手动调用监听事件
+    monitt.emitListener('mousedown', {});
     vi.runAllTimers();
     expect(fn).toHaveBeenCalled();
-    expect(fn).toHaveReturnedWith('请求接口，发送数据');
-    expect(callData[0].name).toBe('click');
+    expect(fn).toHaveReturnedWith('click');
   });
 });

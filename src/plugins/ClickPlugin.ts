@@ -9,7 +9,6 @@ export class ClickPlugin extends Plugin {
   handleClick = (event: Event) => {
     this.listenerHandle(() => {
       const target = event.target;
-      console.log(target);
       // 上报
       this.api.lazySend(
         new EventData({
@@ -22,12 +21,12 @@ export class ClickPlugin extends Plugin {
   install(api: IApi) {
     api.start(() => {
       ['mousedown', 'touchstart'].forEach((eventType: string) => {
-        window.addEventListener(eventType, this.handleClick);
+        api.addEventListener(eventType, this.handleClick);
       });
     });
-    api.destroy((e) => {
+    api.destroy(() => {
       ['mousedown', 'touchstart'].forEach((eventType: string) => {
-        window.removeEventListener(eventType, this.handleClick);
+        api.removeEventListener(eventType, this.handleClick);
       });
     });
   }

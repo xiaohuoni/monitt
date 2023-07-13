@@ -2,6 +2,8 @@ import { Emit } from './Emit';
 import { DataCache } from './Cache';
 import { EventData } from './EventData';
 import { Lazy } from './Lazy';
+import { Sender } from './Sender';
+import { Config, ConfigProps } from './Config';
 
 const EVENTS = ['start', 'destroy'];
 
@@ -20,8 +22,14 @@ export class Monitor extends Emit {
   public instance = {};
   dataCache: DataCache;
   lazy: Lazy;
-  constructor() {
+  config: ConfigProps = {};
+  sender: Sender;
+  listenerEmit: Emit;
+  constructor(config?: Config) {
     super();
+    this.config = new Config(config || {});
+    this.sender = new Sender(this.config);
+    this.listenerEmit = new Emit();
     this.dataCache = new DataCache();
     this.lazy = new Lazy();
     this.plugins = [];
@@ -67,7 +75,8 @@ export class Monitor extends Emit {
     }
   }
   send(data: EventData[]) {
-    console.log('请求接口，发送数据', data);
+    // console.log('请求接口，发送数据', data);
+    this.sender.send(data);
   }
 
   lazySend(data: EventData, timeout = 3000) {
@@ -79,5 +88,27 @@ export class Monitor extends Emit {
         this.dataCache.clearCache();
       }
     }, timeout);
+  }
+
+  emitListener(type: string, val: any) {
+    this.listenerEmit.emit(type, val);
+  }
+
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions | undefined,
+  ): void {
+    window.addEventListener(type, listener, options);
+    // 手动触发，便于测试
+    this.listenerEmit.useSubscription(type, listener as any);
+  }
+
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions | undefined,
+  ): void {
+    window.removeEventListener(type, listener, options);
   }
 }

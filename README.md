@@ -5,10 +5,10 @@
 ## 使用
 
 ```ts
-import { Monitor, ClickPlugin } from 'Monitt';
+import { Monitor, ClickPlugin, Config } from 'Monitt';
 
-// TODO: 这里可以传递 config
-const monitt = new Monitor();
+const config = new Config({ url: 'post url' });
+const monitt = new Monitor(config);
 monitt.use(ClickPlugin);
 monitt.run();
 ```

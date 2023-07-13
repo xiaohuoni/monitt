@@ -13,7 +13,7 @@ describe('Monitor', () => {
   it('normal', () => {
     const name = 'vitest';
     const data = new EventData({ name, data: {} });
-    const fn = vi.fn();
+    const fn = vi.fn((t) => t);
     vi.spyOn(console, 'log').mockImplementation(fn);
     const monitt = new Monitor();
     monitt.run();
@@ -23,7 +23,7 @@ describe('Monitor', () => {
     monitt.lazySend(data);
     monitt.lazySend(data);
     vi.runAllTimers();
-    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(2);
   });
   it('haha', () => {
     const fn = vi.fn((t) => t);
@@ -85,7 +85,7 @@ describe('Monitor', () => {
     expect(errorFn).toHaveReturnedWith('hahaha 方法未定义');
   });
   it('other api', () => {
-    const fn = vi.fn((t) => t);
+    const fn = vi.fn((t) => (t[0] ? t[0].name : t));
     vi.spyOn(console, 'log').mockImplementation(fn);
     class Vt extends Plugin {
       public key = 'Vt';
@@ -108,7 +108,45 @@ describe('Monitor', () => {
     monitt.use(Vt);
     monitt.run();
     vi.runAllTimers();
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(fn).toHaveReturnedWith('请求接口，发送数据');
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).toHaveReturnedWith('vitest');
+  });
+  it('addEventListener', () => {
+    const fn = vi.fn((t) => t);
+    vi.spyOn(console, 'log').mockImplementation(fn);
+    const eventType = 'vtest';
+    class NewMonitt extends Monitor {
+      constructor(config) {
+        super(config);
+      }
+      addEventListener() {
+        // 重写了 addEventListener
+        // 所以手动调用就无效了
+      }
+    }
+    class Vt extends Plugin {
+      public key = 'Vt';
+      constructor(api) {
+        super(api);
+      }
+      handle() {
+        const name = 'vitest';
+        const data = new EventData({ name, data: {} });
+        this.api.lazySend(data);
+      }
+      install(api: IApi): void {
+        api.start(() => {
+          api.addEventListener(eventType, this.handle);
+        });
+      }
+    }
+
+    const monitt = new NewMonitt({ url: 'vitest' });
+    monitt.use(Vt);
+    monitt.run();
+    // 手动调用监听事件
+    monitt.emitListener(eventType, {});
+    vi.runAllTimers();
+    expect(fn).toHaveBeenCalledTimes(0);
   });
 });
