@@ -25,14 +25,14 @@ export class Monitor extends Emit {
   // 延迟执行函数
   lazy: Lazy;
   // 延迟发送的时间，默认 3 秒
-  lazySengTimeout :number = 3000;
-  // 配置 
+  lazySengTimeout: number = 3000;
+  // 配置
   config: ConfigProps = {};
   // 发送器，默认使用 sendBeacon 在空闲时发送，支持自定义
   sender: Sender;
   listenerEmit: Emit;
   // 用户，通过 setUserData 设置，每一次饭送数据的时候会携带
-  userData:any={};
+  userData: any = {};
   constructor(config?: Config) {
     super();
     this.config = new Config(config || {});
@@ -41,7 +41,6 @@ export class Monitor extends Emit {
     this.dataCache = new DataCache();
     this.lazy = new Lazy();
     this.plugins = [];
-    this.skipPlugins = [''];
     this.instance = new Proxy(this, {
       get(target: any, p: string) {
         if (target[p]) {
@@ -60,8 +59,6 @@ export class Monitor extends Emit {
   }
   // 所有的插件
   public plugins: any[] = [];
-  // 支持跳过某些插件
-  public skipPlugins: string[] = [];
 
   // 启动埋点
   public run() {
@@ -78,18 +75,18 @@ export class Monitor extends Emit {
   }
   use(plugin: any) {
     const p = new plugin(this.instance);
-    if (!this.skipPlugins.includes(p.key) && p?.key) {
+    if (!this.config.skipPlugins?.includes(p.key) && p?.key) {
       p.install(this.instance);
       this.plugins.push(p);
     }
   }
 
   // 默认会携带 user 数据
-  format(data: EventData[]){
-return {
-  userData:this.userData,
-  data
-}
+  format(data: EventData[]) {
+    return {
+      userData: this.userData,
+      data,
+    };
   }
   // 立即发送数据，注意和 lazySend 的差异
   send(data: EventData[]) {
@@ -97,7 +94,7 @@ return {
     this.sender.send(this.format(data));
   }
   // 延迟合并发送数据
-  lazySend(data: EventData, timeout?:number) {
+  lazySend(data: EventData, timeout?: number) {
     this.dataCache.addCache(data);
     this.lazy.listenerHandle(() => {
       const data = this.dataCache.getCache();
@@ -105,9 +102,9 @@ return {
         this.send(data);
         this.dataCache.clearCache();
       }
-    }, timeout??this.lazySengTimeout);
+    }, timeout ?? this.lazySengTimeout);
   }
-  setUserData(data:any){
+  setUserData(data: any) {
     this.userData = data;
   }
   emitListener(type: string, val: any) {

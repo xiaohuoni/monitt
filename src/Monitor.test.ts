@@ -85,7 +85,12 @@ describe('Monitor', () => {
     expect(errorFn).toHaveReturnedWith('hahaha 方法未定义');
   });
   it('other api', () => {
-    const fn = vi.fn((t) => (t[0] ? t[0].name : t));
+    const fn = vi.fn((t) => {
+      if (t.data) {
+        return t.data[0] ? t.data[0].name : t.data;
+      }
+      return t;
+    });
     vi.spyOn(console, 'log').mockImplementation(fn);
     class Vt extends Plugin {
       public key = 'Vt';

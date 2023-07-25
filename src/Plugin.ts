@@ -1,5 +1,6 @@
 import { type IApi } from './Monitor';
 import { Lazy } from './Lazy';
+import { EventData } from './EventData';
 
 export class Plugin extends Lazy {
   constructor(api: IApi) {
@@ -9,4 +10,10 @@ export class Plugin extends Lazy {
   api: IApi;
   public key = '';
   install(api: IApi) {}
+  newEventData(data: any) {
+    return new EventData({
+      name: this.key,
+      ...data,
+    });
+  }
 }

@@ -27,14 +27,18 @@ const config = new Config({ ... });
 new Config 时传入的为默认配置，后续都可以通过 `monitt.config.setConfig` 单独修改，如：
 
 ```js
-monitt.config.setConfig('url','http://haha.com/api/v1/monite');
+monitt.config.setConfig('url', 'http://haha.com/api/v1/monite');
 ```
 
-因为有时候 window.monitt  可能是通过 cdn 挂在进来的，此时已经完成了初始化过程，可以在  send 之前调用 set 方法，修改掉默认的配置和方法。
+因为有时候 window.monitt 可能是通过 cdn 挂在进来的，此时已经完成了初始化过程，可以在 send 之前调用 set 方法，修改掉默认的配置和方法。
 
-###  url 
+### url
 
 post 发送的服务器地址，默认为空
+
+### skipPlugins
+
+支持跳过某些插件，可跳过内置插件和外部插件
 
 ## API 和功能概览
 
@@ -51,20 +55,20 @@ new Config 对象，可以取到配置管理器
 设置当前用户数据
 
 ```js
-monitt.setUserData({ id :'1123' })
+monitt.setUserData({ id: '1123' });
 ```
 
-###  instance
+### instance
 
 插件机制的 api，也支持直接调用。
 
-比如 
+比如
 
 ```js
 const monitt = new Monitor();
-monitt.instance.destroy(()=>{
+monitt.instance.destroy(() => {
   // 在 monitt stop 的时候做点啥
-})
+});
 ```
 
 可以调用插件 api 的生命周期函数，其实每一次调用生命周期函数，都是注册一次监听。注意手动调用的时机，比如要调用 start ，要在 run 之前，否则是无效的。
@@ -75,11 +79,11 @@ monitt.instance.destroy(()=>{
 
 ```js
 const monitt = new Monitor();
-const callback = ()=>{
-  monitt.lazy.listenerHandle(()=>{
+const callback = () => {
+  monitt.lazy.listenerHandle(() => {
     // 只会在停止调用 3 秒后执行
-  },3000)
-}
+  }, 3000);
+};
 callback();
 callback();
 callback();
@@ -103,6 +107,46 @@ monitt.addEventListener('mousedown', this.handleClick);
 ```js
 const monitt = new Monitor();
 monitt.removeEventListener('mousedown', this.handleClick);
+```
+
+## 内置插件
+
+内置插件为默认监控行为，可通过 skipPlugins 配置关闭
+
+### ClickPlugin
+
+点击事件监听，会尝试判断被点击组件是否属于已知仓库。返回如下数据结构事件
+
+```js
+{
+    "userData": {},
+    "data": [
+        {
+            "name": "click",
+            "timestamp": 1690275579678,
+            "data": {
+                "top": 10,
+                "left": 8,
+                "eventType": "mousedown",
+                "pageHeight": 755,
+                "scrollTop": 0,
+                "target": "BUTTON",
+                "startTime": 1731.2999999821186,
+                "pageURL": "http://localhost:3000/",
+                "outerHTML": "<button data-type=\"123\" class=\"ant-button ant-button1\">test</button>",
+                "innerHTML": "test",
+                "width": 37,
+                "height": 22,
+                "viewport": {
+                    "width": 514,
+                    "height": 755
+                },
+                "pkg": "antd",
+                "type": "Button"
+            }
+        }
+    ]
+}
 ```
 
 ## 插件机制
@@ -195,8 +239,7 @@ handleClick = (event: Event) => {
 
 ## 演示
 
-https://click-xiaohuoni.vercel.app/
-当前支持收集点击时间，发给一个 404 路径
+https://click-xiaohuoni.vercel.app/ 当前支持收集点击时间，发给一个 404 路径
 
 ## 致谢
 
