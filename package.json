@@ -11,7 +11,7 @@
   "scripts": {
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "build": "father build",
+    "build": "father build && cp -r dist/umd/monitt.min.js examples/error/",
     "format": "prettier --write .",
     "start": "tsx ./src/index"
   },

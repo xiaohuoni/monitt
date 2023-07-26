@@ -115,6 +115,10 @@ monitt.removeEventListener('mousedown', this.handleClick);
 
 ### ClickPlugin
 
+```js
+type: click;
+```
+
 点击事件监听，会尝试判断被点击组件是否属于已知仓库。返回如下数据结构事件
 
 ```js

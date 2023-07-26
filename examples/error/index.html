@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AssetsError</title>
+    <script src="/monitt.min.js"></script>
+  </head>
+
+  <body>
+    <img src="http://a.jpg" alt="" />
+    <script>
+      function test() {
+        return Promise.reject(Error('promise'));
+      }
+
+      test();
+
+      console.error('console error test');
+      try {
+        let x = 10;
+        x.toUpperCase(); // 这里会抛出一个类型错误
+      } catch (error) {
+        throw error;
+      }
+    </script>
+  </body>
+</html>

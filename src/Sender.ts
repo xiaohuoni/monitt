@@ -23,6 +23,7 @@ export class Sender {
     this.sendBeacon = beacon;
   }
   send(data, isImmediate?: boolean) {
+    console.log(data);
     if (isImmediate) {
       this.sendBeacon(this.url!, data);
       return;

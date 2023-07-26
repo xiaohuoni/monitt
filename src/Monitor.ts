@@ -5,16 +5,18 @@ import { Lazy } from './Lazy';
 import { Sender } from './Sender';
 import { Config, ConfigProps } from './Config';
 
-const EVENTS = ['start', 'destroy'];
+const EVENTS = ['start', 'pageshow', 'destroy'];
 
 export enum PluginApi {
   start = 'start',
+  pageshow = 'pageshow',
   destroy = 'destroy',
 }
 
 type Actions = (e: Monitor) => void;
 export type IApi = Monitor & {
   start: (arg0: Actions) => void;
+  pageshow: (arg0: Actions) => void;
   destroy: (arg0: Actions) => void;
 };
 
@@ -63,6 +65,15 @@ export class Monitor extends Emit {
   // 启动埋点
   public run() {
     this.emit(PluginApi.start, this);
+    window.addEventListener(
+      PluginApi.pageshow,
+      (event) => {
+        if (event.persisted) {
+          this.emit(PluginApi.pageshow, this);
+        }
+      },
+      true,
+    );
   }
   // this 指向测试方法，无实际用处
   public haha() {
